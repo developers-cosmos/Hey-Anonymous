@@ -1,8 +1,4 @@
-from socket import *
-from codecs import decode
-#from chatrecord import ChatRecord
-from threading import Thread
-from time import ctime
+from Files.Data.imports import *
 
 class ClientHandler(Thread):
 
@@ -25,8 +21,11 @@ class ClientHandler(Thread):
                 if [sockets[-1],sockets[-2]] not in connected_clients:
                     connected_clients.append([sockets[-1],sockets[-2]])
             print("ACTIVE CLIENTS :", len(sockets), self._address)
-            message = self._client.recv(BUFSIZE)
-            message = message.decode('utf-8')
+            try:
+                message = self._client.recv(BUFSIZE)
+                message = message.decode('utf-8')
+            except:
+                message = "exit"
             # print('\n\n','Sockets = ',sockets)
             if not message or message == "exit" :
                 print("Client Disconnected.")
@@ -47,6 +46,7 @@ class ClientHandler(Thread):
                 self._client.close()
                 break
             else:
+                message = f"{self._address[1]} : {message}"
                 for x in sockets:
                     for y in connected_clients:
                         if x != self._client and y != None and ((y[0].getpeername() == x.getpeername() and y[1].getpeername() == self._address)\
